@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BeautyAI · 支援中心 Support</title>
+<meta name="description" content="BeautyAI 支援中心 — 常見問題、聯絡方式及使用說明。" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+TC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        obsidian: '#0A0908', noir: '#141210', 'noir-2': '#1C1916', 'noir-3': '#262320',
+        gold: '#C9A26B', 'gold-br': '#E5C58A', 'gold-dp': '#8C6B3F',
+        cream: '#F4ECDC', ash: '#9A9089', mute: '#5A524B'
+      },
+      fontFamily: {
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans:  ['"Noto Sans TC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono:  ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      }
+    }}
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #0A0908; color: #F4ECDC; font-family: '"Noto Sans TC"', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .text-gold-gradient {
+    background: linear-gradient(180deg, #F0D9A8 0%, #E5C58A 35%, #C9A26B 65%, #8C6B3F 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: inline-block; padding-right: 0.14em; padding-bottom: 0.08em; margin-right: -0.08em;
+  }
+  .hairline { background: linear-gradient(90deg, transparent 0%, rgba(201,162,107,0.4) 50%, transparent 100%); height: 1px; }
+  .eyebrow { font-family: '"JetBrains Mono"', monospace; font-size: 11px; letter-spacing: 0.32em; color: #C9A26B; text-transform: uppercase; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .number-etched {
+    font-family: '"Cormorant Garamond"', serif; font-style: italic; font-weight: 500;
+    background: linear-gradient(180deg, rgba(229,197,138,0.7) 0%, rgba(140,107,63,0.2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .stardust {
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(229,197,138,0.4), transparent 60%),
+      radial-gradient(1px 1px at 75% 70%, rgba(229,197,138,0.3), transparent 60%),
+      radial-gradient(1px 1px at 60% 20%, rgba(229,197,138,0.4), transparent 60%);
+    background-size: 600px 600px;
+  }
+  .aurora {
+    position: absolute; inset: -20%;
+    background:
+      radial-gradient(40% 50% at 80% 10%, rgba(201,162,107,0.18) 0%, transparent 60%),
+      radial-gradient(35% 45% at 10% 60%, rgba(140,107,63,0.12) 0%, transparent 60%);
+    filter: blur(40px); pointer-events: none;
+  }
+  .faq-item { border-bottom: 1px solid rgba(201,162,107,0.15); }
+  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(.2,.7,.2,1), opacity 0.3s; opacity: 0; }
+  .faq-item.open .faq-answer { max-height: 400px; opacity: 1; }
+  .faq-chevron { transition: transform 0.3s; }
+  .faq-item.open .faq-chevron { transform: rotate(180deg); }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #0A0908; }
+  ::-webkit-scrollbar-thumb { background: #262320; border-radius: 8px; }
+</style>
+</head>
+
+<body class="font-sans text-cream bg-obsidian overflow-x-hidden">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 backdrop-blur bg-obsidian/80 border-b border-gold/12">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5 group">
+      <span class="grid place-items-center w-9 h-9 rounded-full border border-gold/40 group-hover:border-gold-br/70 transition-colors">
+        <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="currentColor"><path d="M12 2 L13.5 9 L20 10.5 L13.5 12 L12 19 L10.5 12 L4 10.5 L10.5 9 Z"/></svg>
+      </span>
+      <span class="font-serif text-xl tracking-wide">Beauty<span class="italic font-medium text-gold-br">AI</span></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm tracking-wider text-cream/80">
+      <a href="index.html" class="hover:text-gold-br transition">首頁</a>
+      <a href="index.html#analysis" class="hover:text-gold-br transition">功能</a>
+      <a href="privacy.html" class="hover:text-gold-br transition">私隱政策</a>
+      <a href="support.html" class="text-gold-br">支援</a>
+    </nav>
+  </div>
+</header>
+
+<!-- TITLE -->
+<section class="relative pt-24 md:pt-32 pb-16 overflow-hidden">
+  <div class="aurora"></div>
+  <div class="absolute inset-0 stardust opacity-50"></div>
+  <div class="relative max-w-[1100px] mx-auto px-6 md:px-10">
+    <div class="reveal">
+      <div class="flex items-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">Support Centre · 支援中心</span>
+      </div>
+      <h1 class="font-serif font-medium leading-[1.0] text-[clamp(44px,6.6vw,96px)] tracking-tight">
+        我們在<span class="italic text-gold-gradient">這裡</span>，<br/>隨時為您解答。
+      </h1>
+      <p class="mt-10 max-w-2xl text-cream/75 leading-relaxed font-light">
+        如有任何疑問或需要協助，歡迎透過以下方式聯絡我們，或查閱常見問題。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT CARD -->
+<section class="relative py-10">
+  <div class="max-w-[1100px] mx-auto px-6 md:px-10">
+    <div class="reveal rounded-3xl border border-gold/25 bg-gradient-to-b from-noir-3 to-noir p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-8">
+      <div class="flex-1">
+        <div class="eyebrow mb-3">電郵支援 · Email Support</div>
+        <a href="mailto:beautyai@ourinnovation.app" class="font-serif text-2xl md:text-3xl text-gold-gradient italic">beautyai@ourinnovation.app</a>
+        <p class="mt-3 text-ash text-sm leading-relaxed">我們通常在 1–2 個工作天內回覆。如有緊急情況，請在郵件主旨標注「URGENT」。</p>
+      </div>
+      <a href="mailto:beautyai@ourinnovation.app" class="inline-flex items-center gap-3 rounded-2xl border border-gold/40 px-6 py-4 text-sm tracking-wider text-gold-br hover:border-gold-br hover:bg-gold/5 transition-all">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+        發送郵件
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="relative py-16 md:py-24">
+  <div class="max-w-[1100px] mx-auto px-6 md:px-10">
+    <div class="reveal mb-12">
+      <div class="eyebrow mb-4">FAQ · 常見問題</div>
+      <h2 class="font-serif text-4xl md:text-5xl">常見問題</h2>
+    </div>
+    <div class="hairline mb-10"></div>
+
+    <div class="space-y-0" id="faq">
+
+      <!-- Q1 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">Beauty Points (BP) 是什麼？如何獲得？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            Beauty Points (BP) 是 BeautyAI 的應用內虛擬代幣，用於進行 AI 分析（每次 10 BP）及造型生成（每次 6 BP）。您可透過以下方式獲得 BP：
+          </p>
+          <ul class="mt-4 space-y-2 text-cream/70 font-light text-sm">
+            <li class="flex gap-3"><span class="text-gold-br mt-0.5">✦</span><span>新用戶註冊：+10 BP</span></li>
+            <li class="flex gap-3"><span class="text-gold-br mt-0.5">✦</span><span>邀請好友：邀請人 +20 BP，受邀人 +20 BP</span></li>
+            <li class="flex gap-3"><span class="text-gold-br mt-0.5">✦</span><span>每日分享：+10 BP/天</span></li>
+            <li class="flex gap-3"><span class="text-gold-br mt-0.5">✦</span><span>觀看激勵廣告：+10 BP/次，每日最多 3 次</span></li>
+            <li class="flex gap-3"><span class="text-gold-br mt-0.5">✦</span><span>購買會籍方案（Trial / Plus / Pro / VIP）</span></li>
+          </ul>
+          <p class="mt-4 text-cream/70 font-light text-sm">BP 永不過期，會籍到期後已購 BP 不會消失。</p>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">我的照片會被儲存或用於 AI 訓練嗎？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            不會。您的照片傳輸時以 HTTPS 加密保護，AI 伺服器僅用於您所要求的分析或生成，絕不會出售、分享給廣告商，或用於訓練 AI 模型。
+          </p>
+          <p class="mt-3 text-cream/70 font-light">若您已登入帳號並儲存記錄，照片會儲存於您的個人加密空間，僅您本人可存取，並可隨時刪除。如使用訪客模式，照片不會寫入雲端。</p>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">分析或生成結果不理想，怎麼辦？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            為獲得最佳效果，請使用光線充足、正面清晰的近照，避免強烈逆光或遮擋五官的配件。若結果仍不理想，可嘗試重新上傳照片或更換分析模式。如多次失敗，請聯絡我們並附上截圖，我們會為您補回 BP。
+          </p>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">如何取消或管理我的會籍？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            BeautyAI 的會籍透過 Apple App Store 處理。如需取消自動續費，請前往 iPhone 的「設定」→「Apple ID」→「訂閱」，找到 BeautyAI 並取消。會籍到期後，已購 BP 不會消失，僅會停止享有解鎖權益（如去廣告、優先生成）。
+          </p>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">如何要求刪除我的個人資料？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            您有權隨時要求查閱、修改或刪除您的個人資料及歷史紀錄。請發送電郵至 <a href="mailto:beautyai@ourinnovation.app" class="text-gold-br hover:underline">beautyai@ourinnovation.app</a>，我們會在 30 個工作天內處理您的請求。
+          </p>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="faq-item py-7 cursor-pointer" onclick="toggleFaq(this)">
+        <div class="flex items-center justify-between gap-6">
+          <h3 class="font-medium text-cream text-lg">邀請好友的獎勵如何運作？</h3>
+          <svg class="faq-chevron w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p class="mt-5 text-cream/70 leading-relaxed font-light">
+            在「邀請好友」頁面分享您的專屬邀請碼或 QR Code。當受邀好友成功註冊並完成首次登入後，雙方各獲 +20 BP（受邀人另加新用戶 +10 BP，共 +30 BP）。每台裝置最多可綁定 3 個帳號，超出後獎勵將不計算。
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="relative pt-20 pb-10 bg-obsidian border-t border-gold/12 mt-12">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <span class="grid place-items-center w-9 h-9 rounded-full border border-gold/40">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="currentColor"><path d="M12 2 L13.5 9 L20 10.5 L13.5 12 L12 19 L10.5 12 L4 10.5 L10.5 9 Z"/></svg>
+        </span>
+        <span class="font-serif text-xl tracking-wide">Beauty<span class="italic font-medium text-gold-br">AI</span></span>
+      </a>
+      <div class="text-xs text-ash tracking-wider flex flex-wrap gap-x-6 gap-y-2">
+        <span>© 2026 BeautyAI</span>
+        <a href="index.html" class="hover:text-gold-br transition">首頁</a>
+        <a href="privacy.html" class="hover:text-gold-br transition">私隱政策</a>
+        <a href="support.html" class="hover:text-gold-br transition">支援</a>
+        <a href="mailto:beautyai@ourinnovation.app" class="hover:text-gold-br transition">beautyai@ourinnovation.app</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(el) {
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BeautyAI · 不是濾鏡，是你的下一個樣子</title>
+<meta name="description" content="BeautyAI — 保留真實五官，預覽最適合你的妝容與髮型。AI 深度分析、Before / After 模擬、一鍵生成精美對比卡片。" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+TC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          obsidian:    '#0A0908',
+          noir:        '#141210',
+          'noir-2':    '#1C1916',
+          'noir-3':    '#262320',
+          gold:        '#C9A26B',
+          'gold-br':   '#E5C58A',
+          'gold-dp':   '#8C6B3F',
+          cream:       '#F4ECDC',
+          ash:         '#9A9089',
+          mute:        '#5A524B',
+          rose:        '#C7889A',
+        },
+        fontFamily: {
+          serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+          sans:  ['"Noto Sans TC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono:  ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+        letterSpacing: {
+          eyebrow: '0.32em',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0A0908;
+    color: #F4ECDC;
+    font-family: '"Noto Sans TC"', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Editorial gold gradient text */
+  .text-gold-gradient {
+    background: linear-gradient(180deg, #F0D9A8 0%, #E5C58A 35%, #C9A26B 65%, #8C6B3F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    padding-right: 0.14em;
+    padding-bottom: 0.08em;
+    margin-right: -0.08em;
+  }
+
+  /* Subtle gold glow */
+  .glow-soft {
+    box-shadow:
+      0 0 0 1px rgba(201,162,107,0.18),
+      0 30px 80px -20px rgba(201,162,107,0.18),
+      0 0 120px -40px rgba(201,162,107,0.35);
+  }
+  .glow-card {
+    box-shadow:
+      0 1px 0 rgba(229,197,138,0.06) inset,
+      0 0 0 1px rgba(201,162,107,0.12),
+      0 30px 60px -25px rgba(0,0,0,0.8),
+      0 0 60px -30px rgba(201,162,107,0.25);
+  }
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px rgba(201,162,107,0.35),
+      0 0 60px -10px rgba(201,162,107,0.45);
+  }
+
+  /* Aurora background blobs */
+  .aurora {
+    position: absolute; inset: -20%;
+    background:
+      radial-gradient(40% 50% at 80% 20%, rgba(201,162,107,0.35) 0%, transparent 60%),
+      radial-gradient(35% 45% at 15% 80%, rgba(199,136,154,0.18) 0%, transparent 60%),
+      radial-gradient(30% 30% at 50% 50%, rgba(140,107,63,0.18) 0%, transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  /* Hairline gold dividers */
+  .hairline {
+    background: linear-gradient(90deg, transparent 0%, rgba(201,162,107,0.4) 50%, transparent 100%);
+    height: 1px;
+  }
+  .hairline-v {
+    background: linear-gradient(180deg, transparent 0%, rgba(201,162,107,0.4) 50%, transparent 100%);
+    width: 1px;
+  }
+
+  /* Metallic gold button (primary) */
+  .btn-gold {
+    position: relative;
+    background: linear-gradient(180deg, #F0D9A8 0%, #D6B07C 50%, #A6814F 100%);
+    color: #1A1410;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-gold::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 35%);
+    opacity: 0.6; pointer-events: none;
+  }
+  .btn-gold::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.9s cubic-bezier(.2,.7,.2,1);
+    pointer-events: none;
+  }
+  .btn-gold:hover::after { transform: translateX(100%); }
+
+  /* Outline button */
+  .btn-outline {
+    background: linear-gradient(180deg, rgba(28,25,22,0.9), rgba(20,18,16,0.9));
+    border: 1px solid rgba(201,162,107,0.4);
+    color: #F4ECDC;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .btn-outline:hover {
+    border-color: rgba(229,197,138,0.7);
+    box-shadow: 0 0 30px -10px rgba(201,162,107,0.5);
+  }
+
+  /* Section eyebrow */
+  .eyebrow {
+    font-family: '"JetBrains Mono"', monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: #C9A26B;
+    text-transform: uppercase;
+  }
+
+  /* Fade-in on scroll */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1.1s cubic-bezier(.2,.7,.2,1), transform 1.1s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-d1 { transition-delay: 0.08s; }
+  .reveal-d2 { transition-delay: 0.16s; }
+  .reveal-d3 { transition-delay: 0.24s; }
+  .reveal-d4 { transition-delay: 0.32s; }
+
+  /* Phone frame */
+  .phone-frame {
+    border-radius: 44px;
+    background: linear-gradient(180deg, #1C1916, #0A0908);
+    padding: 10px;
+    box-shadow:
+      0 0 0 1px rgba(201,162,107,0.18),
+      0 50px 80px -30px rgba(0,0,0,0.85),
+      0 0 90px -20px rgba(201,162,107,0.25);
+  }
+  .phone-frame > .screen {
+    border-radius: 34px;
+    overflow: hidden;
+    background: #0A0908;
+  }
+
+  /* Before/After slider — top layer (new) is revealed from LEFT.
+     Drag left  → new image fully covers old (only new visible)
+     Drag right → new image fully clipped (only old visible)
+     Both images render at the SAME size + position; only the clipping mask changes. */
+  .ba-wrap { position: relative; user-select: none; touch-action: none; overflow: hidden; }
+  .ba-after { position: absolute; top: 0; left: 0; bottom: 0; overflow: hidden; }
+  .ba-after .ba-after-inner {
+    position: absolute; top: 0; left: 0; height: 100%;
+    /* width is set in JS to match .ba-wrap width so the image stays put */
+  }
+  .ba-handle {
+    position: absolute; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent 0%, #E5C58A 20%, #E5C58A 80%, transparent 100%);
+    box-shadow: 0 0 30px rgba(229,197,138,0.7);
+    transform: translateX(-50%);
+  }
+  .ba-handle .knob {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #1C1916, #0A0908);
+    border: 1px solid rgba(201,162,107,0.6);
+    display: grid; place-items: center;
+    box-shadow:
+      0 0 0 4px rgba(10,9,8,0.6),
+      0 0 30px rgba(229,197,138,0.5);
+    cursor: ew-resize;
+  }
+  .ba-handle .knob svg { color: #E5C58A; }
+
+  /* Studio chip strip */
+  .chip {
+    border: 1px solid rgba(201,162,107,0.3);
+    background: rgba(28,25,22,0.7);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #C9A26B;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .chip.active {
+    background: linear-gradient(180deg, #E5C58A, #C9A26B);
+    color: #1A1410;
+    border-color: transparent;
+    box-shadow: 0 0 30px -5px rgba(229,197,138,0.6);
+  }
+
+  /* Tier card states */
+  .tier-card { transition: all 0.5s cubic-bezier(.2,.7,.2,1); }
+  .tier-card[data-active="false"] {
+    opacity: 0.55;
+    transform: scale(0.97);
+    filter: saturate(0.7);
+  }
+
+  /* Marquee */
+  @keyframes scroll-x {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee-track { animation: scroll-x 50s linear infinite; }
+
+  /* Aurora rotate */
+  @keyframes aurora-shift {
+    0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
+    50%      { transform: translate3d(2%,-2%,0) rotate(8deg); }
+  }
+  .aurora { animation: aurora-shift 22s ease-in-out infinite; }
+
+  /* Star sparkle dots */
+  .stardust {
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(229,197,138,0.5), transparent 60%),
+      radial-gradient(1px 1px at 75% 70%, rgba(229,197,138,0.4), transparent 60%),
+      radial-gradient(1px 1px at 60% 20%, rgba(229,197,138,0.5), transparent 60%),
+      radial-gradient(1px 1px at 35% 80%, rgba(229,197,138,0.3), transparent 60%),
+      radial-gradient(1px 1px at 90% 40%, rgba(229,197,138,0.4), transparent 60%),
+      radial-gradient(1px 1px at 10% 60%, rgba(229,197,138,0.3), transparent 60%);
+    background-size: 600px 600px;
+  }
+
+  /* Header link underline */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: #C9A26B; transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s cubic-bezier(.2,.7,.2,1);
+  }
+  .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+
+  /* Number etched effect */
+  .number-etched {
+    font-family: '"Cormorant Garamond"', serif;
+    font-style: italic;
+    font-weight: 500;
+    background: linear-gradient(180deg, rgba(229,197,138,0.6) 0%, rgba(140,107,63,0.2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Image placeholder watermark stripe */
+  .img-watermark::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(10,9,8,0.6) 100%);
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0A0908; }
+  ::-webkit-scrollbar-thumb { background: #262320; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a342e; }
+
+  @media (max-width: 640px) {
+    .ba-handle .knob { width: 44px; height: 44px; }
+  }
+</style>
+</head>
+
+<body class="font-sans text-cream bg-obsidian overflow-x-hidden">
+
+<!-- ============================================================ HEADER -->
+<header id="hdr" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+  <div class="absolute inset-0 bg-obsidian/0 backdrop-blur-0 transition-all duration-500" id="hdrBg"></div>
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2.5 group">
+      <span class="grid place-items-center w-9 h-9 rounded-full border border-gold/40 group-hover:border-gold-br/70 transition-colors">
+        <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2 L13.5 9 L20 10.5 L13.5 12 L12 19 L10.5 12 L4 10.5 L10.5 9 Z" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span class="font-serif text-xl tracking-wide">Beauty<span class="italic font-medium text-gold-br">AI</span></span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-9 text-sm tracking-wider text-cream/80">
+      <a href="#top"      class="nav-link" data-nav="top">首頁</a>
+      <a href="#analysis" class="nav-link" data-nav="analysis">分析</a>
+      <a href="#studio"   class="nav-link" data-nav="studio">試妝</a>
+      <a href="#share"    class="nav-link" data-nav="share">分享</a>
+      <a href="#member"   class="nav-link" data-nav="member">會籍</a>
+      <a href="privacy.html" class="nav-link">私隱政策</a>
+    </nav>
+
+    <a href="#download" class="hidden sm:inline-flex btn-gold rounded-full px-5 py-2.5 text-xs tracking-[0.18em] font-semibold">
+      DOWNLOAD
+    </a>
+
+    <button class="md:hidden grid place-items-center w-10 h-10 rounded-full border border-gold/30" aria-label="menu">
+      <span class="block w-4 h-px bg-gold mb-1.5"></span>
+      <span class="block w-4 h-px bg-gold"></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================ HERO -->
+<section id="top" data-screen-label="01 Hero" class="relative min-h-screen pt-32 md:pt-36 pb-20 overflow-hidden">
+  <div class="aurora"></div>
+  <div class="absolute inset-0 stardust opacity-60 pointer-events-none"></div>
+
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+
+    <!-- LEFT: copy -->
+    <div class="lg:col-span-7 reveal">
+      <div class="flex items-center gap-3 mb-8">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">Spring Issue · 2026</span>
+      </div>
+
+      <h1 class="font-serif font-medium leading-[0.95] text-[clamp(48px,7.4vw,108px)] tracking-tight">
+        不是濾鏡，<br/>
+        是你的<span class="italic text-gold-gradient">下一個樣子</span>。
+      </h1>
+
+      <p class="mt-8 text-base md:text-lg text-cream/70 leading-relaxed max-w-xl font-light">
+        保留真實五官，預覽最適合你的妝容與髮型。<br class="hidden sm:block"/>
+        AI 深度分析 · 個人化建議 · Before / After 模擬。
+      </p>
+
+      <!-- meta strip -->
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs tracking-[0.18em] text-cream/60">
+        <div class="flex items-center gap-2">
+          <span class="w-1 h-1 rounded-full bg-gold"></span>
+          <span>AI DEEP ANALYSIS</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-1 h-1 rounded-full bg-gold"></span>
+          <span>BEFORE / AFTER</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-1 h-1 rounded-full bg-gold"></span>
+          <span>PRIVACY-FIRST</span>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <div id="download" class="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <a href="#" class="btn-gold rounded-2xl px-6 py-4 flex items-center gap-3 group">
+          <svg viewBox="0 0 24 24" class="w-7 h-7" fill="currentColor">
+            <path d="M17.05 12.04c-.03-2.91 2.38-4.31 2.49-4.38-1.36-1.99-3.48-2.27-4.23-2.3-1.8-.18-3.51 1.06-4.43 1.06-.93 0-2.33-1.04-3.83-1.01-1.96.03-3.78 1.14-4.79 2.9-2.06 3.57-.53 8.84 1.49 11.74 1 1.42 2.18 3.01 3.74 2.95 1.5-.06 2.07-.97 3.88-.97 1.81 0 2.32.97 3.91.94 1.62-.03 2.64-1.43 3.62-2.86 1.16-1.64 1.63-3.24 1.65-3.32-.04-.02-3.16-1.21-3.5-4.75zM14.13 3.49c.81-.99 1.36-2.36 1.21-3.74-1.17.05-2.59.78-3.43 1.76-.75.87-1.42 2.27-1.24 3.61 1.31.1 2.65-.66 3.46-1.63z"/>
+          </svg>
+          <div class="text-left leading-tight">
+            <div class="text-[10px] tracking-[0.2em] opacity-80">DOWNLOAD ON THE</div>
+            <div class="text-lg font-semibold tracking-wide -mt-0.5">App Store</div>
+          </div>
+        </a>
+
+        <a href="#" class="btn-outline rounded-2xl px-6 py-4 flex items-center gap-3">
+          <svg viewBox="0 0 24 24" class="w-7 h-7 text-gold-br" fill="currentColor">
+            <path d="M3.61 1.81C3.23 2.21 3 2.83 3 3.65v16.7c0 .82.23 1.44.61 1.84l.05.05L13.83 12 3.66 1.76 3.61 1.81zM17.06 8.46l-2.94 1.68-2.46-2.46 5.4-3.04zm0 7.08l-5.4-3.04 2.46-2.46 2.94 1.68v3.82zm3.81-3.54l-2.99 1.71L15.16 12l2.72-1.71 3 1.71c.74.42.74 1.36-.01 1.81z"/>
+          </svg>
+          <div class="text-left leading-tight">
+            <div class="text-[10px] tracking-[0.2em] text-cream/60">GET IT ON</div>
+            <div class="text-lg font-semibold tracking-wide -mt-0.5">Google Play <span class="text-[10px] text-gold/70 ml-1">SOON</span></div>
+          </div>
+        </a>
+      </div>
+
+
+    </div>
+
+    <!-- RIGHT: phone with hero portrait -->
+    <div class="lg:col-span-5 reveal reveal-d2 flex justify-center lg:justify-end">
+      <div class="relative">
+        <!-- decorative arc -->
+        <div class="absolute -top-10 -right-10 w-72 h-72 rounded-full border border-gold/15"></div>
+        <div class="absolute -bottom-12 -left-8 w-40 h-40 rounded-full border border-gold/10"></div>
+
+        <div class="phone-frame w-[280px] sm:w-[320px] md:w-[340px] aspect-[1284/2778] relative">
+          <div class="screen relative h-full">
+            <img src="assets/hero-portrait.png" alt="BeautyAI hero" class="w-full h-full object-cover" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scroll cue -->
+  <div class="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-cream/50 text-[10px] tracking-[0.32em]">
+    <span>SCROLL</span>
+    <span class="block w-px h-10 bg-gradient-to-b from-gold/60 to-transparent"></span>
+  </div>
+</section>
+
+<!-- ============================================================ MARQUEE -->
+<section class="relative py-10 border-y border-gold/10 overflow-hidden bg-noir/40">
+  <div class="marquee-track flex gap-16 whitespace-nowrap font-serif italic text-2xl md:text-3xl text-cream/30">
+    <span>Editorial Beauty</span><span class="text-gold/60">✦</span>
+    <span>Proportion · Symmetry · Skin</span><span class="text-gold/60">✦</span>
+    <span>Before / After Simulation</span><span class="text-gold/60">✦</span>
+    <span>New Looks, Same You</span><span class="text-gold/60">✦</span>
+    <span>Editorial Beauty</span><span class="text-gold/60">✦</span>
+    <span>Proportion · Symmetry · Skin</span><span class="text-gold/60">✦</span>
+    <span>Before / After Simulation</span><span class="text-gold/60">✦</span>
+    <span>New Looks, Same You</span><span class="text-gold/60">✦</span>
+  </div>
+</section>
+
+<!-- ============================================================ FEATURE 1 — ANALYSIS -->
+<section id="analysis" data-screen-label="02 Analysis" class="relative py-28 md:py-40 overflow-hidden">
+  <div class="absolute right-[-20%] top-[10%] w-[700px] h-[700px] rounded-full border border-gold/10"></div>
+  <div class="absolute right-[-15%] top-[15%] w-[600px] h-[600px] rounded-full border border-gold/5"></div>
+
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+    <!-- copy -->
+    <div class="lg:col-span-6 reveal">
+      <div class="flex items-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">01 · Analysis</span>
+      </div>
+      <h2 class="font-serif font-medium leading-[1.02] text-[clamp(38px,5.4vw,76px)] tracking-tight">
+        看懂你的美，<br/>是<span class="italic text-gold-gradient">有結構</span>的。
+      </h2>
+      <p class="mt-7 text-cream/70 leading-relaxed max-w-lg font-light">
+        透過比例與輪廓分析，找到最適合你的修飾方式。從五官、膚質到整體造型，建立個人化分析模型 — 不再依賴主觀感受，而是清晰的美學數據。
+      </p>
+
+      <!-- analysis modes mini-list -->
+      <div class="mt-12 space-y-4">
+        <div class="flex items-center gap-5 group">
+          <span class="number-etched font-serif text-3xl w-10">01</span>
+          <span class="hairline-v h-8"></span>
+          <div class="flex-1">
+            <div class="text-cream font-medium">全面分析 <span class="text-ash text-sm font-light italic ml-1">The Complete Reading</span></div>
+            <div class="text-ash text-xs tracking-wider mt-0.5">臉型 · 皮膚 · 造型 · 氣質</div>
+          </div>
+          <span class="text-gold-br font-mono text-xs tracking-wider opacity-70 group-hover:opacity-100 transition">10 BP</span>
+        </div>
+        <div class="hairline"></div>
+
+        <div class="flex items-center gap-5 group">
+          <span class="number-etched font-serif text-3xl w-10">02</span>
+          <span class="hairline-v h-8"></span>
+          <div class="flex-1">
+            <div class="text-cream font-medium">五官分析 <span class="text-ash text-sm font-light italic ml-1">Proportion Study</span></div>
+            <div class="text-ash text-xs tracking-wider mt-0.5">比例 · 對稱 · 輪廓</div>
+          </div>
+          <span class="text-gold-br font-mono text-xs tracking-wider opacity-70 group-hover:opacity-100 transition">10 BP</span>
+        </div>
+        <div class="hairline"></div>
+
+        <div class="flex items-center gap-5 group">
+          <span class="number-etched font-serif text-3xl w-10">03</span>
+          <span class="hairline-v h-8"></span>
+          <div class="flex-1">
+            <div class="text-cream font-medium">造型形象 <span class="text-ash text-sm font-light italic ml-1">Style Portrait</span></div>
+            <div class="text-ash text-xs tracking-wider mt-0.5">妝容 · 髮型 · 穿搭</div>
+          </div>
+          <span class="text-gold-br font-mono text-xs tracking-wider opacity-70 group-hover:opacity-100 transition">10 BP</span>
+        </div>
+        <div class="hairline"></div>
+
+        <div class="flex items-center gap-5 group">
+          <span class="number-etched font-serif text-3xl w-10">04</span>
+          <span class="hairline-v h-8"></span>
+          <div class="flex-1">
+            <div class="text-cream font-medium">皮膚狀態 <span class="text-ash text-sm font-light italic ml-1">Skin Dossier</span></div>
+            <div class="text-ash text-xs tracking-wider mt-0.5">膚色 · 紋理 · 瑕疵</div>
+          </div>
+          <span class="text-gold-br font-mono text-xs tracking-wider opacity-70 group-hover:opacity-100 transition">10 BP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- visuals: stacked phones -->
+    <div class="lg:col-span-6 reveal reveal-d2 relative">
+      <div class="relative h-[600px] sm:h-[680px] mx-auto max-w-[600px]">
+        <!-- back phone: analysis modes -->
+        <div class="phone-frame absolute right-0 top-0 w-[240px] sm:w-[290px] aspect-[1284/2778] rotate-[6deg]">
+          <div class="screen h-full">
+            <img src="assets/analysis-modes.png" alt="Analysis modes" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+        <!-- front phone: face radar -->
+        <div class="phone-frame absolute left-0 bottom-0 w-[260px] sm:w-[320px] aspect-[1284/2778] -rotate-[4deg] z-10">
+          <div class="screen h-full">
+            <img src="assets/face-radar.png" alt="Face radar analysis" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FEATURE 2 — STUDIO (TRY-ON) -->
+<section id="studio" data-screen-label="03 Studio" class="relative py-28 md:py-40 bg-noir/30 border-y border-gold/10 overflow-hidden">
+  <div class="absolute -left-[15%] top-[20%] w-[500px] h-[500px] rounded-full bg-rose/5 blur-3xl"></div>
+
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+    <!-- visuals -->
+    <div class="lg:col-span-6 order-2 lg:order-1 reveal">
+      <div class="relative h-[640px] sm:h-[720px] mx-auto max-w-[600px]">
+        <div class="phone-frame absolute left-0 top-0 w-[260px] sm:w-[320px] aspect-[1284/2778] -rotate-[4deg]">
+          <div class="screen h-full">
+            <img src="assets/studio-grid.png" alt="Studio styles" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+        <div class="phone-frame absolute right-0 bottom-4 w-[220px] sm:w-[270px] aspect-[1284/2778] rotate-[5deg] z-10">
+          <div class="screen h-full">
+            <img src="assets/skin-report.png" alt="Skin report" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+        <!-- chip strip -->
+        <div id="chipStrip" class="absolute left-1/2 -translate-x-1/2 bottom-2 z-20 flex flex-wrap gap-2 justify-center w-[90%] max-w-md">
+          <span class="chip">韓系自然</span>
+          <span class="chip">復古紅唇</span>
+          <span class="chip">水蜜桃粉嫩</span>
+          <span class="chip">歐美煙燻</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- copy -->
+    <div class="lg:col-span-6 order-1 lg:order-2 reveal reveal-d1">
+      <div class="flex items-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">02 · Studio</span>
+      </div>
+      <h2 class="font-serif font-medium leading-[1.02] text-[clamp(38px,5.4vw,76px)] tracking-tight">
+        試妝，<br/>不再靠<span class="italic text-gold-gradient">想像</span>。
+      </h2>
+      <p class="mt-7 text-cream/70 leading-relaxed max-w-lg font-light">
+        自然、韓系、復古、晚宴 — 多種風格即時預覽。<br/>
+        髮型、髮色、唇釉、眼妝，自由切換組合。<br/>
+        <span class="italic text-gold/80">還是你，只是更好看。</span>
+      </p>
+
+      <div class="mt-12 grid grid-cols-2 gap-4">
+        <div class="rounded-2xl border border-gold/15 bg-noir/60 p-5 backdrop-blur">
+          <div class="font-serif text-4xl text-gold-gradient leading-none">36</div>
+          <div class="text-xs tracking-[0.18em] text-ash mt-2">髮色解鎖</div>
+        </div>
+        <div class="rounded-2xl border border-gold/15 bg-noir/60 p-5 backdrop-blur">
+          <div class="font-serif text-4xl text-gold-gradient leading-none">22</div>
+          <div class="text-xs tracking-[0.18em] text-ash mt-2">髮型造型</div>
+        </div>
+        <div class="rounded-2xl border border-gold/15 bg-noir/60 p-5 backdrop-blur">
+          <div class="font-serif text-4xl text-gold-gradient leading-none">19 + 19</div>
+          <div class="text-xs tracking-[0.18em] text-ash mt-2">精選 + 自選妝容</div>
+        </div>
+        <div class="rounded-2xl border border-gold/15 bg-noir/60 p-5 backdrop-blur">
+          <div class="font-serif text-4xl text-gold-gradient leading-none">∞</div>
+          <div class="text-xs tracking-[0.18em] text-ash mt-2">組合變化</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BEFORE / AFTER -->
+<section id="ba" data-screen-label="04 Before After" class="relative py-28 md:py-40 overflow-hidden">
+  <div class="aurora opacity-50"></div>
+
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="text-center max-w-3xl mx-auto reveal">
+      <div class="flex items-center justify-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">Before / After</span>
+        <span class="block w-10 hairline"></span>
+      </div>
+      <h2 class="font-serif font-medium leading-[1.02] text-[clamp(38px,5.4vw,76px)] tracking-tight">
+        還是你，<br/>只是<span class="italic text-gold-gradient">更好看</span>。
+      </h2>
+      <p class="mt-6 text-cream/70 max-w-xl mx-auto font-light">
+        真實五官 + AI 模擬，而不是誇張變臉。<br/>
+        拖動下方滑桿，親眼見證造型差異。
+      </p>
+    </div>
+
+    <!-- B/A interactive -->
+    <div class="mt-16 reveal reveal-d2">
+      <div class="relative max-w-3xl mx-auto rounded-3xl overflow-hidden glow-card">
+        <div class="absolute top-5 left-5 z-20 bg-noir/80 backdrop-blur border border-gold/30 rounded-full px-4 py-1.5 text-[10px] tracking-[0.32em] text-gold-br">
+          AFTER · 新
+        </div>
+        <div class="absolute top-5 right-5 z-20 bg-noir/80 backdrop-blur border border-gold/30 rounded-full px-4 py-1.5 text-[10px] tracking-[0.32em] text-cream/80">
+          BEFORE · 原
+        </div>
+
+        <div id="ba" class="ba-wrap aspect-square sm:aspect-[4/3] bg-noir-2">
+          <!-- BOTTOM layer: 舊圖 (before) — always full size, fixed position -->
+          <img src="assets/ba-before.jpeg" alt="Before" class="absolute inset-0 w-full h-full object-cover" />
+          <!-- TOP layer: 新圖 (after) — same size, same position, clipped from right side as handle moves right -->
+          <div class="ba-after" id="baAfter" style="width:50%;">
+            <div class="ba-after-inner" id="baAfterInner">
+              <img src="assets/ba-after.jpeg" alt="After" class="absolute inset-0 w-full h-full object-cover"/>
+            </div>
+          </div>
+          <!-- handle -->
+          <div class="ba-handle" id="baHandle" style="left:50%;">
+            <div class="knob">
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 6L4 12l5 6M15 6l5 6-5 6"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center text-ash text-xs tracking-[0.2em] mt-5">← DRAG TO COMPARE →</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FEATURE 3 — SHARE -->
+<section id="share" data-screen-label="05 Share" class="relative py-28 md:py-40 bg-noir/30 border-y border-gold/10 overflow-hidden">
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+
+    <!-- copy -->
+    <div class="lg:col-span-6 reveal">
+      <div class="flex items-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">03 · Share</span>
+      </div>
+      <h2 class="font-serif font-medium leading-[1.02] text-[clamp(38px,5.4vw,76px)] tracking-tight">
+        你的造型，<br/>也值得被<span class="italic text-gold-gradient">分享</span>。
+      </h2>
+      <p class="mt-7 text-cream/70 leading-relaxed max-w-lg font-light">
+        一鍵生成精美對比卡片，發佈到 Instagram / Threads。<br/>
+        你的變美歷程，都被完美記住 — 從第一次分析，到每一次模擬。
+      </p>
+
+      <!-- social tags -->
+      <div class="mt-10 flex flex-wrap gap-2">
+        <span class="px-4 py-2 rounded-full text-xs tracking-wider border border-gold/25 bg-noir/60 text-cream/80">#BeautyAI</span>
+        <span class="px-4 py-2 rounded-full text-xs tracking-wider border border-gold/25 bg-noir/60 text-cream/80">#AIStyling</span>
+        <span class="px-4 py-2 rounded-full text-xs tracking-wider border border-gold/25 bg-noir/60 text-cream/80">#NewLooksSameYou</span>
+        <span class="px-4 py-2 rounded-full text-xs tracking-wider border border-gold/25 bg-noir/60 text-cream/80">#BeforeAfter</span>
+      </div>
+
+      <!-- archive note -->
+      <div class="mt-12 rounded-2xl border border-gold/15 bg-noir/60 p-6 backdrop-blur flex items-center gap-5">
+        <div class="grid place-items-center w-12 h-12 rounded-full border border-gold/30 bg-noir-2">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 text-gold-br" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 8v4l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <div class="text-cream font-medium">Archive 完整保留</div>
+          <div class="text-ash text-sm mt-1">回顧每一次分析與模擬，逐步建立你的個人風格。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- visuals -->
+    <div class="lg:col-span-6 reveal reveal-d2">
+      <div class="relative h-[640px] sm:h-[720px] mx-auto max-w-[600px]">
+        <div class="phone-frame absolute right-0 top-0 w-[240px] sm:w-[290px] aspect-[1284/2778] rotate-[5deg]">
+          <div class="screen h-full">
+            <img src="assets/archive.png" alt="Archive" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+        <div class="phone-frame absolute left-0 bottom-0 w-[260px] sm:w-[320px] aspect-[1284/2778] -rotate-[5deg] z-10">
+          <div class="screen h-full">
+            <img src="assets/share-card.png" alt="Share card" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MEMBERSHIP -->
+<section id="member" data-screen-label="06 Membership" class="relative py-28 md:py-40 overflow-hidden">
+  <div class="aurora opacity-60"></div>
+
+  <div class="relative max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="max-w-3xl mx-auto text-center reveal">
+      <div class="flex items-center justify-center gap-3 mb-7">
+        <span class="block w-10 hairline"></span>
+        <span class="eyebrow">Membership</span>
+        <span class="block w-10 hairline"></span>
+      </div>
+      <h2 class="font-serif font-medium leading-[1.02] text-[clamp(40px,5.6vw,80px)] tracking-tight">
+        解鎖<span class="italic text-gold-gradient">更多可能</span>。
+      </h2>
+      <p class="mt-6 text-cream/70 max-w-xl mx-auto font-light">
+        使用 <span class="italic font-serif text-gold-br">Beauty Points</span> 進行分析與造型，靈活選擇專屬會籍。<span class="text-ash">會籍到期僅停止解鎖權益，已購 BP 不會過期。</span>
+      </p>
+    </div>
+
+    <!-- tier toggle -->
+    <div class="mt-12 flex justify-center reveal reveal-d1">
+      <div class="inline-flex p-1 rounded-full border border-gold/25 bg-noir/70 backdrop-blur" id="tierToggle">
+        <button data-tier="glow"     class="px-6 py-2 rounded-full text-xs tracking-[0.22em] transition-all">GLOW</button>
+        <button data-tier="elegance" class="px-6 py-2 rounded-full text-xs tracking-[0.22em] transition-all">ELEGANCE</button>
+        <button data-tier="goddess"  class="px-6 py-2 rounded-full text-xs tracking-[0.22em] transition-all">GODDESS</button>
+      </div>
+    </div>
+
+    <!-- pricing trio -->
+    <div class="mt-16 grid md:grid-cols-3 gap-6 lg:gap-8 reveal reveal-d2">
+      <!-- GLOW -->
+      <div class="tier-card relative rounded-3xl border border-gold/15 bg-noir/60 p-8 backdrop-blur" data-tier="glow" data-active="false">
+        <div class="eyebrow mb-5">GLOW · Membership</div>
+        <div class="font-serif italic font-medium text-5xl text-cream leading-none">
+          HK$38<span class="text-base text-ash not-italic font-sans tracking-wider"> / 30 日</span>
+        </div>
+        <div class="hairline my-7"></div>
+        <ul class="space-y-3 text-sm text-cream/80 font-light">
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>8 款髮型解鎖</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>18 款髮色解鎖</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>9 款精選妝容 + 9 自選妝容</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>高清原圖下載</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>280 BP <span class="text-ash">(分析 28 次 / 生成 4 次)</span></span></li>
+        </ul>
+        <button class="mt-8 w-full btn-outline rounded-2xl py-3.5 text-sm tracking-[0.18em]">升級至 GLOW</button>
+      </div>
+
+      <!-- ELEGANCE (popular) -->
+      <div class="tier-card relative rounded-3xl border border-gold/40 bg-gradient-to-b from-noir-3 to-noir p-8 backdrop-blur glow-card md:scale-[1.02]" data-tier="elegance" data-active="true">
+        <span class="absolute -top-3 right-6 bg-gold text-obsidian text-[10px] tracking-[0.32em] font-semibold px-3 py-1 rounded-full">MOST POPULAR</span>
+        <div class="eyebrow mb-5 text-gold-br">Elegance · Membership</div>
+        <div class="font-serif italic font-medium text-5xl text-gold-gradient leading-none">
+          HK$88<span class="text-base text-ash not-italic font-sans tracking-wider"> / 30 日</span>
+        </div>
+        <div class="hairline my-7"></div>
+        <ul class="space-y-3 text-sm text-cream font-light">
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>16 款髮型解鎖</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>28 款髮色解鎖</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>14 款精選妝容 + 14 組自選</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>高清原圖下載</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>免廣告</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>750 BP <span class="text-ash">(分析 75 次 / 生成 12 次)</span></span></li>
+        </ul>
+        <button class="mt-8 w-full btn-gold rounded-2xl py-3.5 text-sm tracking-[0.22em] font-semibold">升級至 ELEGANCE</button>
+      </div>
+
+      <!-- GODDESS -->
+      <div class="tier-card relative rounded-3xl border border-gold/15 bg-noir/60 p-8 backdrop-blur" data-tier="goddess" data-active="false">
+        <div class="eyebrow mb-5">Goddess · Membership</div>
+        <div class="font-serif italic font-medium text-5xl text-cream leading-none">
+          HK$188<span class="text-base text-ash not-italic font-sans tracking-wider"> / 30 日</span>
+        </div>
+        <div class="hairline my-7"></div>
+        <ul class="space-y-3 text-sm text-cream/80 font-light">
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>全部髮型 / 髮色解鎖</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>全部精選妝容 + 全部自選組合</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>高清原圖下載</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>免廣告 + 優先運算</span></li>
+          <li class="flex gap-3"><span class="text-gold-br">✦</span><span>2000 BP <span class="text-ash">(分析 200次 / 生成 33次)</span></span></li>
+        </ul>
+        <button class="mt-8 w-full btn-outline rounded-2xl py-3.5 text-sm tracking-[0.18em]">升級至 GODDESS</button>
+      </div>
+    </div>
+
+    <p class="mt-10 text-center text-xs tracking-[0.18em] text-ash">
+      Beauty Points 永不過期 · 會籍到期僅收回解鎖權益 · 已購 BP 不會消失
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ CTA STRIP -->
+<section class="relative py-24 border-y border-gold/15 bg-gradient-to-b from-noir/40 to-obsidian overflow-hidden">
+  <div class="absolute inset-0 stardust opacity-50"></div>
+  <div class="relative max-w-4xl mx-auto px-6 md:px-10 text-center reveal">
+    <div class="font-serif italic text-gold-br text-2xl md:text-3xl">— New Looks, Same You —</div>
+    <h3 class="mt-5 font-serif font-medium leading-[1.05] text-[clamp(36px,4.6vw,64px)] tracking-tight">
+      你的下一個樣子，<br/>從今天開始預覽。
+    </h3>
+    <div class="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+      <a href="#" class="btn-gold rounded-2xl px-7 py-4 flex items-center justify-center gap-3">
+        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor"><path d="M17.05 12.04c-.03-2.91 2.38-4.31 2.49-4.38-1.36-1.99-3.48-2.27-4.23-2.3-1.8-.18-3.51 1.06-4.43 1.06-.93 0-2.33-1.04-3.83-1.01-1.96.03-3.78 1.14-4.79 2.9-2.06 3.57-.53 8.84 1.49 11.74 1 1.42 2.18 3.01 3.74 2.95 1.5-.06 2.07-.97 3.88-.97 1.81 0 2.32.97 3.91.94 1.62-.03 2.64-1.43 3.62-2.86 1.16-1.64 1.63-3.24 1.65-3.32-.04-.02-3.16-1.21-3.5-4.75zM14.13 3.49c.81-.99 1.36-2.36 1.21-3.74-1.17.05-2.59.78-3.43 1.76-.75.87-1.42 2.27-1.24 3.61 1.31.1 2.65-.66 3.46-1.63z"/></svg>
+        <span class="font-semibold tracking-wide">App Store 下載</span>
+      </a>
+      <a href="#" class="btn-outline rounded-2xl px-7 py-4 flex items-center justify-center gap-3">
+        <svg viewBox="0 0 24 24" class="w-6 h-6 text-gold-br" fill="currentColor"><path d="M3.61 1.81C3.23 2.21 3 2.83 3 3.65v16.7c0 .82.23 1.44.61 1.84l.05.05L13.83 12 3.66 1.76 3.61 1.81zM17.06 8.46l-2.94 1.68-2.46-2.46 5.4-3.04zm0 7.08l-5.4-3.04 2.46-2.46 2.94 1.68v3.82zm3.81-3.54l-2.99 1.71L15.16 12l2.72-1.71 3 1.71c.74.42.74 1.36-.01 1.81z"/></svg>
+        <span class="font-semibold tracking-wide">Google Play <span class="text-xs text-gold/70 ml-1">即將推出</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FOOTER -->
+<footer class="relative pt-20 pb-10 bg-obsidian">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <a href="#top" class="flex items-center gap-2.5">
+          <span class="grid place-items-center w-9 h-9 rounded-full border border-gold/40">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="currentColor"><path d="M12 2 L13.5 9 L20 10.5 L13.5 12 L12 19 L10.5 12 L4 10.5 L10.5 9 Z"/></svg>
+          </span>
+          <span class="font-serif text-xl tracking-wide">Beauty<span class="italic font-medium text-gold-br">AI</span></span>
+        </a>
+        <p class="mt-5 text-ash text-sm font-light leading-relaxed max-w-sm">
+          BeautyAI — 真實五官 + AI 模擬，發現更好的你。<br/>
+          New Looks, Same You.
+        </p>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="eyebrow mb-5">Product</div>
+        <ul class="space-y-2.5 text-sm text-cream/70 font-light">
+          <li><a href="#analysis" class="hover:text-gold-br transition">分析</a></li>
+          <li><a href="#studio"   class="hover:text-gold-br transition">試妝</a></li>
+          <li><a href="#share"    class="hover:text-gold-br transition">分享</a></li>
+          <li><a href="#member"   class="hover:text-gold-br transition">會籍</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="eyebrow mb-5">Legal</div>
+        <ul class="space-y-2.5 text-sm text-cream/70 font-light">
+          <li><a href="privacy.html" class="hover:text-gold-br transition">私隱政策</a></li>
+          <li><a href="privacy.html#terms" class="hover:text-gold-br transition">使用條款</a></li>
+          <li><a href="support.html" class="hover:text-gold-br transition">聯絡支援</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-3">
+        <div class="eyebrow mb-5">Support</div>
+        <a href="mailto:beautyai@ourinnovation.app" class="block text-cream hover:text-gold-br transition font-medium">beautyai@ourinnovation.app</a>
+        <p class="text-ash text-xs mt-2 tracking-wider">RESPONSE WITHIN 48H</p>
+
+        <div class="mt-6 flex gap-3">
+          <a href="#" class="grid place-items-center w-10 h-10 rounded-full border border-gold/30 hover:border-gold-br/70 transition" aria-label="instagram">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg>
+          </a>
+          <a href="#" class="grid place-items-center w-10 h-10 rounded-full border border-gold/30 hover:border-gold-br/70 transition" aria-label="threads">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21c5 0 8-3 8-8 0-7-4-10-8-10S4 6 4 12c0 4 2 7 6 7 3 0 4-2 4-4s-1-3-3-3-3 1-3 2"/></svg>
+          </a>
+          <a href="mailto:beautyai@ourinnovation.app" class="grid place-items-center w-10 h-10 rounded-full border border-gold/30 hover:border-gold-br/70 transition" aria-label="email">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-br" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 7 9-7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hairline my-10"></div>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs text-ash tracking-wider">
+      <div>© 2026 BeautyAI · Our Innovation. All rights reserved.</div>
+      <div class="font-mono text-[10px]">v1.0 · 2026 · HK</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================ JS -->
+<script>
+  // -------- Fade-in on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }});
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // -------- Header scroll style + active nav
+  const hdr   = document.getElementById('hdr');
+  const hdrBg = document.getElementById('hdrBg');
+  const navLinks = document.querySelectorAll('[data-nav]');
+  const sections = ['top','analysis','studio','share','member'].map(id => document.getElementById(id));
+  function onScroll() {
+    const y = window.scrollY;
+    hdrBg.style.background = y > 40 ? 'rgba(10,9,8,0.78)' : 'rgba(10,9,8,0)';
+    hdrBg.style.backdropFilter = y > 40 ? 'blur(14px)' : 'blur(0)';
+    hdrBg.style.borderBottom = y > 40 ? '1px solid rgba(201,162,107,0.12)' : '1px solid transparent';
+
+    let cur = 'top';
+    for (const s of sections) {
+      if (s && s.getBoundingClientRect().top <= 120) cur = s.id;
+    }
+    navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === cur));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // -------- Before/After slider
+  (() => {
+    const wrap = document.querySelector('.ba-wrap');
+    if (!wrap) return;
+    const after  = document.getElementById('baAfter');
+    const inner  = document.getElementById('baAfterInner');
+    const handle = document.getElementById('baHandle');
+    let dragging = false;
+    function syncInnerWidth() {
+      // Keep the after image at the SAME size as the wrap so it never moves —
+      // only the .ba-after mask width changes.
+      if (inner) inner.style.width = wrap.clientWidth + 'px';
+    }
+    syncInnerWidth();
+    window.addEventListener('resize', syncInnerWidth);
+    function setPos(clientX) {
+      const r = wrap.getBoundingClientRect();
+      let pct = ((clientX - r.left) / r.width) * 100;
+      pct = Math.max(0, Math.min(100, pct));
+      after.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    const onDown = (e) => { dragging = true; setPos((e.touches?.[0]||e).clientX); };
+    const onMove = (e) => { if (!dragging) return; setPos((e.touches?.[0]||e).clientX); };
+    const onUp   = () => { dragging = false; };
+    wrap.addEventListener('mousedown', onDown);
+    wrap.addEventListener('touchstart', onDown, { passive: true });
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchend', onUp);
+    // Auto idle motion
+    let t = 0, idle = true;
+    wrap.addEventListener('mouseenter', () => idle = false);
+    wrap.addEventListener('mouseleave', () => idle = true);
+    function tick() {
+      if (idle && !dragging) {
+        t += 0.012;
+        const pct = 50 + Math.sin(t) * 22;
+        after.style.width = pct + '%';
+        handle.style.left = pct + '%';
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
+  // -------- Studio chip auto-cycle
+  (() => {
+    const chips = document.querySelectorAll('#chipStrip .chip');
+    if (!chips.length) return;
+    let i = 0;
+    chips[0].classList.add('active');
+    setInterval(() => {
+      chips[i].classList.remove('active');
+      i = (i + 1) % chips.length;
+      chips[i].classList.add('active');
+    }, 1800);
+  })();
+
+  // -------- Membership tier toggle
+  (() => {
+    const buttons = document.querySelectorAll('#tierToggle button');
+    const cards   = document.querySelectorAll('.tier-card');
+    function setTier(tier) {
+      buttons.forEach(b => {
+        const on = b.dataset.tier === tier;
+        b.classList.toggle('text-obsidian', on);
+        b.style.background = on ? 'linear-gradient(180deg,#E5C58A,#C9A26B)' : 'transparent';
+        b.classList.toggle('text-cream/70', !on);
+      });
+      cards.forEach(c => c.dataset.active = (c.dataset.tier === tier) ? 'true' : 'false');
+    }
+    buttons.forEach(b => b.addEventListener('click', () => setTier(b.dataset.tier)));
+    setTier('elegance');
+  })();
+</script>
+
+</body>
+</html>
